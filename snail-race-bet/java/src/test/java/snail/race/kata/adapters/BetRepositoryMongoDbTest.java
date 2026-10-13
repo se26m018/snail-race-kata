@@ -7,10 +7,10 @@ import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import snail.race.kata.domain.Bet;
+import snail.race.kata.domain.PodiumPronostic;
 
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,15 +41,22 @@ public class BetRepositoryMongoDbTest {
 
     @Test
     void register_a_bets() {
-        // register a bet
-        // How can we verify the bet is actually inserted ?
-        // "Rien n'est plus dangereux qu'une idée quand on en a qu'une" (Emile Chartier)
-        // TIPS : Find some (>=3) options before commiting to one
-        Assertions.fail("TODO : write the test, then the implementation😉");
+        Bet bet = new Bet("alice", new PodiumPronostic(3, 1, 2), 1_000L);
+
+        repository.register(bet);
+
+        assertThat(repository.findByDateRange(0L, 2_000L)).containsExactly(bet);
     }
 
     @Test
     void retrieve_only_bets_inside_the_time_range() {
-        Assertions.fail("TODO : write the test, then the implementation😉");
+        Bet before = new Bet("before", new PodiumPronostic(1, 2, 3), 500L);
+        Bet inside = new Bet("inside", new PodiumPronostic(1, 2, 3), 1_500L);
+        Bet after = new Bet("after", new PodiumPronostic(1, 2, 3), 2_500L);
+        repository.register(before);
+        repository.register(inside);
+        repository.register(after);
+
+        assertThat(repository.findByDateRange(1_000L, 2_000L)).containsExactly(inside);
     }
 }
