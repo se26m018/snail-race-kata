@@ -1,18 +1,23 @@
 package snail.race.kata.domain;
 
-import java.util.ArrayList;
-
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 class BetApplicationTest {
+    BetApplication application;
+    BetRepository repository;
+    RaceResultProvider raceResultProvider;
+
+    @BeforeEach
+    void setup() {
+        repository = new BetRepositoryFake();
+        raceResultProvider = new RaceResultProviderFake();
+        application = new BetApplication(repository, raceResultProvider);
+    }
+
     @Test
     void registers_two_bets() {
-        var repository = new BetRepositoryFake();
-        var application = new BetApplication(
-                repository, new RaceResultProviderFake());
-
         application.placeBet("Alex", 1000, 3, 2, 1);
         application.placeBet("Manuela", 1500, 1, 2, 3);
 
@@ -24,8 +29,6 @@ class BetApplicationTest {
 
     @Test
     void matching_bet_exactly_three_seconds_before_race_wins() {
-        var application = createApplicationWithTwoRaces();
-
         application.placeBet("Alex", 17000, 3, 2, 1);
 
         assertThat(application.getWinnersForLastRace())
@@ -34,8 +37,6 @@ class BetApplicationTest {
 
     @Test
     void wrong_podium_order_does_not_win() {
-        var application = createApplicationWithTwoRaces();
-
         application.placeBet("Manuela", 17000, 1, 2, 3);
 
         assertThat(application.getWinnersForLastRace()).isEmpty();
@@ -43,8 +44,6 @@ class BetApplicationTest {
 
     @Test
     void bet_less_than_three_seconds_before_race_does_not_win() {
-        var application = createApplicationWithTwoRaces();
-
         application.placeBet("Alex", 17001, 3, 2, 1);
 
         assertThat(application.getWinnersForLastRace()).isEmpty();
@@ -52,37 +51,9 @@ class BetApplicationTest {
 
     @Test
     void bet_for_previous_race_does_not_win_last_race() {
-        var application = createApplicationWithTwoRaces();
-
         application.placeBet("Manuela", 7000, 3, 2, 1);
 
         assertThat(application.getWinnersForLastRace()).isEmpty();
     }
 
-    private BetApplication createApplicationWithTwoRaces() {
-        var repository = new BetRepositoryFake();
-
-        RaceResultProvider raceProvider = new RaceResultProvider() {
-            @Override
-            public SnailRaces races() {
-                Podium previousPodium = new Podium(
-                        new Snail(1, "Schnecke eins"),
-                        new Snail(2, "Schnecke zwei"),
-                        new Snail(3, "Schnecke drei"));
-
-                Podium lastPodium = new Podium(
-                        new Snail(3, "Schnecke drei"),
-                        new Snail(2, "Schnecke zwei"),
-                        new Snail(1, "Schnecke eins"));
-
-                ArrayList<SnailRace> races = new ArrayList<SnailRace>();
-                races.add(new SnailRace(1, 10000, previousPodium));
-                races.add(new SnailRace(2, 20000, lastPodium));
-
-                return new SnailRaces(races);
-            }
-        };
-
-        return new BetApplication(repository, raceProvider);
-    }
 }
