@@ -3,13 +3,19 @@ package snail.race.kata.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import snail.race.kata.adapters.BetRepositoryContract;
 
-class BetRepositoryFakeTest {
+class BetRepositoryFakeTest extends BetRepositoryContract {
     BetRepository repository;
 
     @BeforeEach
     void setUp() {
         repository = new BetRepositoryFake();
+    }
+
+    @Override
+    protected BetRepository repository() {
+        return repository;
     }
 
     @Test

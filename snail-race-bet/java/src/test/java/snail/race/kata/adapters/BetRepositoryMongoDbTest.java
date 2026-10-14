@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import snail.race.kata.domain.Bet;
+import snail.race.kata.domain.BetRepository;
 import snail.race.kata.domain.PodiumPronostic;
 
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
@@ -17,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
-public class BetRepositoryMongoDbTest {
+public class BetRepositoryMongoDbTest extends BetRepositoryContract {
     MongoClient mongoClient;
     BetRepositoryMongoDb repository;
 
@@ -37,6 +38,11 @@ public class BetRepositoryMongoDbTest {
     @AfterEach
     void tearDown() {
         mongoClient.close();
+    }
+
+    @Override
+    protected BetRepository repository() {
+        return repository;
     }
 
     @Test
