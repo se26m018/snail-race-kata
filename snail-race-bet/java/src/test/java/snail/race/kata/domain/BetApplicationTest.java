@@ -4,6 +4,11 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
+import snail.race.kata.domain.RaceResultProvider.Podium;
+import snail.race.kata.domain.RaceResultProvider.Snail;
+import snail.race.kata.domain.RaceResultProvider.SnailRace;
+import snail.race.kata.domain.RaceResultProvider.SnailRaces;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BetApplicationTest {
@@ -62,26 +67,21 @@ class BetApplicationTest {
     private BetApplication createApplicationWithTwoRaces() {
         var repository = new BetRepositoryFake();
 
-        RaceResultProvider raceProvider = new RaceResultProvider() {
-            @Override
-            public SnailRaces races() {
-                Podium previousPodium = new Podium(
-                        new Snail(1, "Schnecke eins"),
-                        new Snail(2, "Schnecke zwei"),
-                        new Snail(3, "Schnecke drei"));
+        Podium previousPodium = new Podium(
+                new Snail(1, "Schnecke eins"),
+                new Snail(2, "Schnecke zwei"),
+                new Snail(3, "Schnecke drei"));
 
-                Podium lastPodium = new Podium(
-                        new Snail(3, "Schnecke drei"),
-                        new Snail(2, "Schnecke zwei"),
-                        new Snail(1, "Schnecke eins"));
+        Podium lastPodium = new Podium(
+                new Snail(3, "Schnecke drei"),
+                new Snail(2, "Schnecke zwei"),
+                new Snail(1, "Schnecke eins"));
 
-                ArrayList<SnailRace> races = new ArrayList<SnailRace>();
-                races.add(new SnailRace(1, 10000, previousPodium));
-                races.add(new SnailRace(2, 20000, lastPodium));
+        ArrayList<SnailRace> races = new ArrayList<SnailRace>();
+        races.add(new SnailRace(1, 10000, previousPodium));
+        races.add(new SnailRace(2, 20000, lastPodium));
 
-                return new SnailRaces(races);
-            }
-        };
+        var raceProvider = new RaceResultProviderFake(new SnailRaces(races));
 
         return new BetApplication(repository, raceProvider);
     }
