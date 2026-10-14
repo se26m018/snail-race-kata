@@ -1,31 +1,25 @@
 package snail.race.kata.domain;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class RaceResultProviderFake implements RaceResultProvider {
-    private final SnailRaces results;
-
-    public RaceResultProviderFake() {
-        this(new SnailRaces(
-                List.of(
-                        new SnailRace(
-                                1,
-                                1,
-                                new Podium(
-                                        new Snail(
-                                                1,
-                                                "test"),
-                                        new Snail(0, null),
-                                        new Snail(0, null))))));
-    }
-
-    public RaceResultProviderFake(SnailRaces results) {
-        this.results = results;
-    }
 
     @Override
     public SnailRaces races() {
-        return results;
-    }
+        Podium previousPodium = new Podium(
+                new Snail(1, "Schnecke eins"),
+                new Snail(2, "Schnecke zwei"),
+                new Snail(3, "Schnecke drei"));
 
+        Podium lastPodium = new Podium(
+                new Snail(3, "Schnecke drei"),
+                new Snail(2, "Schnecke zwei"),
+                new Snail(1, "Schnecke eins"));
+
+        ArrayList<SnailRace> races = new ArrayList<SnailRace>();
+        races.add(new SnailRace(1, 10000, previousPodium));
+        races.add(new SnailRace(2, 20000, lastPodium));
+
+        return new SnailRaces(races);
+    }
 }
